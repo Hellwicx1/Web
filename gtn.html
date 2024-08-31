@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Number Game</title>
+    <!-- Include the Confetti Script -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #1e1e1e; /* Dark background color */
+            color: #e0e0e0; /* Light text color */
+        }
+        .game-container {
+            text-align: center;
+            background: #2c2c2c; /* Darker background for the game box */
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); /* Darker shadow */
+            width: 350px;
+            margin-bottom: 20px; /* Margin to separate from the button */
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #00e6e6;
+            text-shadow: 0 0 10px #00e6e6, 0 0 20px #00e6e6, 0 0 30px #00e6e6; /* Neon glow effect */
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #555; /* Dark border */
+            border-radius: 10px;
+            outline: none;
+            width: 80px;
+            margin-bottom: 20px;
+            text-align: center;
+            background: #3a3a3a; /* Dark background for input */
+            color: #e0e0e0; /* Light text color */
+            transition: background 0.3s, border-color 0.3s; /* Transition for border color */
+        }
+        input:focus {
+            background: #4a4a4a; /* Slightly lighter on focus */
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 12px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-3px);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+        .hidden {
+            display: none;
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .fade {
+            animation: fadeOut 0.5s ease forwards;
+        }
+        .low-high, .invalid {
+            color: #ff4d4d;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        .congratulations {
+            color: #00e600;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        .attempt-green {
+            color: green;
+        }
+        .attempt-orange {
+            color: orange;
+        }
+        .attempt-red {
+            color: red;
+        }
+        .another-game-btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 12px;
+            background-color: #28a745;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            margin-top: 20px; /* Margin to create space above the button */
+        }
+        .another-game-btn:hover {
+            background-color: #218838;
+            transform: translateY(-3px);
+        }
+        .another-game-btn:active {
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Guess the Number</h1>
+        <p>Guess a number between 1 and 100:</p>
+        <input type="text" id="guess" placeholder="Enter a number">
+        <button id="submit-btn" onclick="makeGuess()">Submit Guess</button>
+        <p id="message"></p>
+        <p id="attempts"></p>
+    </div>
+
+    
+    <script>
+        let numberToGuess;
+        let attempts;
+
+        function startNewGame() {
+            numberToGuess = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            document.getElementById('message').textContent = '';
+            document.getElementById('attempts').textContent = '';
+            document.getElementById('guess').value = '';
+            document.getElementById('guess').style.borderColor = '#555'; // Reset border color
+        }
+
+        function makeGuess() {
+            const guessInput = document.getElementById('guess').value.trim();
+            const guess = parseInt(guessInput);
+            const message = document.getElementById('message');
+            const attemptsDisplay = document.getElementById('attempts');
+            const guessBox = document.getElementById('guess');
+
+            // Check for empty input or non-numeric values
+            if (guessInput === '' || isNaN(guess)) {
+                message.textContent = "Please enter a valid number.";
+                message.className = 'invalid';
+                return; // Exit function to prevent attempts from counting
+            }
+
+            // Check for out-of-range numbers
+            if (guess < 1 || guess > 100) {
+                message.textContent = "Please enter a number between 1 and 100.";
+                message.className = 'invalid';
+                return; // Exit function to prevent attempts from counting
+            }
+
+            attempts++;
+
+            if (attempts > 15) {
+                message.textContent = "Sorry, you've reached the maximum attempts!";
+                message.className = 'low-high';
+                return;
+            }
+
+            if (guess < numberToGuess) {
+                message.textContent = "Too low! Try again.";
+                message.className = 'low-high';
+            } else if (guess > numberToGuess) {
+                message.textContent = "Too high! Try again.";
+                message.className = 'low-high';
+            } else {
+                message.textContent = `Congratulations! You guessed the correct number ${numberToGuess}.`;
+                message.className = 'congratulations';
+
+                // Trigger confetti burst effect on correct guess
+                triggerConfetti();
+            }
+
+            // Set attempt colors based on range
+            if (attempts <= 5) {
+                attemptsDisplay.className = 'attempt-green';
+                guessBox.style.borderColor = 'green';
+            } else if (attempts <= 10) {
+                attemptsDisplay.className = 'attempt-orange';
+                guessBox.style.borderColor = 'orange';
+            } else {
+                attemptsDisplay.className = 'attempt-red';
+                guessBox.style.borderColor = 'red';
+            }
+
+            attemptsDisplay.textContent = `Attempts: ${attempts}`;
+
+            // Apply fade effect
+            document.getElementById('submit-btn').classList.add('fade');
+
+            // Remove fade class after animation to allow future animations
+            setTimeout(() => {
+                document.getElementById('submit-btn').classList.remove('fade');
+            }, 500);
+        }
+
+        function triggerConfetti() {
+            var count = 200;
+            var defaults = {
+                origin: { y: 0.7 }
+            };
+
+            function fire(particleRatio, opts) {
+                confetti({
+                    ...defaults,
+                    ...opts,
+                    particleCount: Math.floor(count * particleRatio)
+                });
+            }
+
+            fire(0.25, {
+                spread: 26,
+                startVelocity: 55,
+            });
+            fire(0.2, {
+                spread: 60,
+            });
+            fire(0.35, {
+                spread: 100,
+                decay: 0.91,
+                scalar: 0.8
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 25,
+                decay: 0.92,
+                scalar: 1.2
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 45,
+            });
+        }
+
+        // Start a new game on page load
+        startNewGame();
+    </script>
+</body>
+</html>
