@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .emoji {
+            font-size: 50px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        #result {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rock Paper Scissors</h1>
+    <p>Choose one:</p>
+    <div id="choices">
+        <span class="emoji" onclick="playGame('rock')">🤛</span>
+        <span class="emoji" onclick="playGame('scissors')">✌️</span>
+        <span class="emoji" onclick="playGame('paper')">🤚</span>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        function playGame(playerChoice) {
+            const choices = ['rock', 'scissors', 'paper'];
+            const computerChoice = choices[Math.floor(Math.random() * 3)];
+            let result = '';
+
+            if (playerChoice === computerChoice) {
+                result = "It's a tie! You both chose " + getEmoji(playerChoice);
+            } else if (
+                (playerChoice === 'rock' && computerChoice === 'scissors') ||
+                (playerChoice === 'scissors' && computerChoice === 'paper') ||
+                (playerChoice === 'paper' && computerChoice === 'rock')
+            ) {
+                result = "You win! " + getEmoji(playerChoice) + " beats " + getEmoji(computerChoice);
+            } else {
+                result = "You lose! " + getEmoji(computerChoice) + " beats " + getEmoji(playerChoice);
+            }
+
+            document.getElementById('result').textContent = result;
+        }
+
+        function getEmoji(choice) {
+            switch (choice) {
+                case 'rock': return '🤛';
+                case 'scissors': return '✌️';
+                case 'paper': return '🤚';
+            }
+        }
+    </script>
