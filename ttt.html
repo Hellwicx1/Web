@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+            font-family: 'Times New Roman', Times, serif;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 10px;
+            margin-top: 20px;
+            transition: transform 0.3s;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3em;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .cell:hover {
+            background: #f0f0f0;
+            transform: scale(1.1);
+        }
+        .winner {
+            margin-top: 20px;
+            font-size: 1.5em;
+            color: #000;
+        }
+        button, select {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            background: #ddd;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            color: #333;
+            transition: background 0.3s;
+        }
+        button:hover, select:hover {
+            background: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tic Tac Toe</h1>
+        <select id="gameMode">
+            <option value="friend">Play with Friend</option>
+            <option value="computer">Play with Computer</option>
+        </select>
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        <div class="winner" id="winner"></div>
+        <button onclick="resetGame()">Reset Game</button>
+    </div>
+
+    <script>
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let gameMode = 'friend';
+        const cells = document.querySelectorAll('.cell');
+        const winnerDisplay = document.getElementById('winner');
+        const gameModeSelect = document.getElementById('gameMode');
+        const winningCombinations = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6],
+        ];
+
+        gameModeSelect.addEventListener('change', (e) => {
+            gameMode = e.target.value;
+            resetGame();
+        });
+
+        cells.forEach(cell => cell.addEventListener('click', handleClick));
+
+        function handleClick(e) {
+            const index = e.target.getAttribute('data-index');
+            if (board[index] === '' && winnerDisplay.textContent === '') {
+                board[index] = currentPlayer;
+                e.target.textContent = currentPlayer;
+                e.target.style.transform = 'scale(1.1)';
+                setTimeout(() => e.target.style.transform = 'scale(1)', 150);
+                
+                if (checkWinner()) {
+                    winnerDisplay.textContent = `Player ${currentPlayer} Wins!`;
+                } else if (board.every(cell => cell !== '')) {
+                    winnerDisplay.textContent = 'Draw!';
+                } else {
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                    if (gameMode === 'computer' && currentPlayer === 'O') {
+                        setTimeout(computerMove, 1500); // Add delay for computer's move
+                    }
+                }
+            }
+        }
+
+        function checkWinner() {
+            return winningCombinations.some(combination => {
+                return combination.every(index => board[index] === currentPlayer);
+            });
+        }
+
+        function computerMove() {
+            let emptyIndices = board.map((cell, index) => cell === '' ? index : null).filter(index => index !== null);
+            let randomIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            board[randomIndex] = 'O';
+            cells[randomIndex].textContent = 'O';
+            cells[randomIndex].style.transform = 'scale(1.1)';
+            setTimeout(() => cells[randomIndex].style.transform = 'scale(1)', 150);
+            if (checkWinner()) {
+                winnerDisplay.textContent = 'Computer Wins!';
+            } else if (board.every(cell => cell !== '')) {
+                winnerDisplay.textContent = 'Draw!';
+            } else {
+                currentPlayer = 'X';
+            }
+        }
+
+        function resetGame() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.style.transform = 'scale(1)';
+            });
+            winnerDisplay.textContent = '';
+        }
+    </script>
+</body>
+</html>
