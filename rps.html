@@ -4,61 +4,158 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rock Paper Scissors Game</title>
+    <title>Advanced Rock Paper Scissors</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+
+        .container {
             text-align: center;
-            margin-top: 50px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        .emoji {
-            font-size: 50px;
+
+        h1 {
+            color: #333;
+        }
+
+        .choices {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .choice {
             cursor: pointer;
-            margin: 10px;
+            margin: 0 15px;
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: background-color 0.3s;
         }
-        #result {
-            font-size: 24px;
-            margin-top: 20px;
+
+        .choice:hover {
+            background-color: #f1f1f1;
+        }
+
+        .result {
+            font-size: 1.2em;
+            margin: 20px 0;
+        }
+
+        .score {
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>Rock Paper Scissors</h1>
-    <p>Choose one:</p>
-    <div id="choices">
-        <span class="emoji" onclick="playGame('rock')">🤛</span>
-        <span class="emoji" onclick="playGame('scissors')">✌️</span>
-        <span class="emoji" onclick="playGame('paper')">🤚</span>
+    <div class="container">
+        <h1>Rock Paper Scissors</h1>
+        <div class="score">
+            <p>Player Score: <span id="playerScore">0</span></p>
+            <p>Computer Score: <span id="computerScore">0</span></p>
+        </div>
+        <div class="choices">
+            <div class="choice" data-choice="rock">Rock</div>
+            <div class="choice" data-choice="paper">Paper</div>
+            <div class="choice" data-choice="scissors">Scissors</div>
+        </div>
+        <div class="result" id="result">Make your move!</div>
+        <button id="reset">Reset Game</button>
     </div>
 
-    <div id="result"></div>
-
     <script>
-        function playGame(playerChoice) {
-            const choices = ['rock', 'scissors', 'paper'];
-            const computerChoice = choices[Math.floor(Math.random() * 3)];
-            let result = '';
+        const choices = document.querySelectorAll('.choice');
+        const result = document.getElementById('result');
+        const playerScoreEl = document.getElementById('playerScore');
+        const computerScoreEl = document.getElementById('computerScore');
+        const resetButton = document.getElementById('reset');
 
-            if (playerChoice === computerChoice) {
-                result = "It's a tie! You both chose " + getEmoji(playerChoice);
-            } else if (
-                (playerChoice === 'rock' && computerChoice === 'scissors') ||
-                (playerChoice === 'scissors' && computerChoice === 'paper') ||
-                (playerChoice === 'paper' && computerChoice === 'rock')
+        let playerScore = 0;
+        let computerScore = 0;
+
+        const getComputerChoice = () => {
+            const choices = ['rock', 'paper', 'scissors'];
+            return choices[Math.floor(Math.random() * choices.length)];
+        };
+
+        const getWinner = (player, computer) => {
+            if (player === computer) {
+                return 'draw';
+            }
+            if (
+                (player === 'rock' && computer === 'scissors') ||
+                (player === 'scissors' && computer === 'paper') ||
+                (player === 'paper' && computer === 'rock')
             ) {
-                result = "You win! " + getEmoji(playerChoice) + " beats " + getEmoji(computerChoice);
+                return 'player';
+            }
+            return 'computer';
+        };
+
+        const updateScore = (winner) => {
+            if (winner === 'player') {
+                playerScore++;
+                playerScoreEl.textContent = playerScore;
+            } else if (winner === 'computer') {
+                computerScore++;
+                computerScoreEl.textContent = computerScore;
+            }
+        };
+
+        const playGame = (playerChoice) => {
+            const computerChoice = getComputerChoice();
+            const winner = getWinner(playerChoice, computerChoice);
+            let message = `You chose ${playerChoice}, computer chose ${computerChoice}. `;
+
+            if (winner === 'player') {
+                message += 'You win!';
+            } else if (winner === 'computer') {
+                message += 'You lose!';
             } else {
-                result = "You lose! " + getEmoji(computerChoice) + " beats " + getEmoji(playerChoice);
+                message += "It's a draw!";
             }
 
-            document.getElementById('result').textContent = result;
-        }
+            result.textContent = message;
+            updateScore(winner);
+        };
 
-        function getEmoji(choice) {
-            switch (choice) {
-                case 'rock': return '🤛';
-                case 'scissors': return '✌️';
-                case 'paper': return '🤚';
-            }
-        }
+        choices.forEach(choice => {
+            choice.addEventListener('click', () => {
+                playGame(choice.getAttribute('data-choice'));
+            });
+        });
+
+        resetButton.addEventListener('click', () => {
+            playerScore = 0;
+            computerScore = 0;
+            playerScoreEl.textContent = playerScore;
+            computerScoreEl.textContent = computerScore;
+            result.textContent = 'Make your move!';
+        });
     </script>
+</body>
+</html>
