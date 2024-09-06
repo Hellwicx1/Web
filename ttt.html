@@ -117,7 +117,7 @@
                 e.target.textContent = currentPlayer;
                 e.target.style.transform = 'scale(1.1)';
                 setTimeout(() => e.target.style.transform = 'scale(1)', 150);
-                
+
                 if (checkWinner()) {
                     winnerDisplay.textContent = `Player ${currentPlayer} Wins!`;
                 } else if (board.every(cell => cell !== '')) {
@@ -125,7 +125,7 @@
                 } else {
                     currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
                     if (gameMode === 'computer' && currentPlayer === 'O') {
-                        setTimeout(computerMove, 1500); // Add delay for computer's move
+                        setTimeout(computerMove, 300); // Computer's move with 1-second delay
                     }
                 }
             }
