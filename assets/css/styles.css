@@ -1,4 +1,4 @@
-/*===== GOOGLE FONTS =====*/
+/*=== GOOGLE FONTS =====*/
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
 /*===== VARIABLES CSS =====*/
 :root {
@@ -111,7 +111,7 @@ img {
   left: 0;
   z-index: var(--z-fixed);
   background-color: #fff;
-  box-shadow: 0 1px 4px rgba(146, 161, 176, 0.15);
+  box-shadow: 0 1px 4px rgb(133, 133, 133, 0.15);
 }
 
 /*===== NAV =====*/
@@ -214,7 +214,7 @@ img {
   width: 260px;
 }
 .home__blob {
-  fill: silver;
+  fill: #b200ff;
 }
 .home__blob-img {
   width: 360px;
@@ -223,7 +223,7 @@ img {
 /*BUTTONS*/
 .button {
   display: inline-block;
-  background-color: silver;
+  background-color: #9f16b8;
   color: #000000;
   padding: 0.75rem 2.5rem;
   font-weight: var(--font-semi);
